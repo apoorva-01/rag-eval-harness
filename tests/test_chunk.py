@@ -28,3 +28,13 @@ def test_semantic_breaks_on_section():
     chunks = chunk_blocks(_blocks(), "semantic")
     sections = {c.section for c in chunks}
     assert sections == {"1 Intro", "2 Method"}
+
+
+def test_chunk_ids_unique_across_blocks_on_same_page():
+    blocks = [
+        Block("p1", 1, "1 Intro", "Intro text. " * 60),
+        Block("p1", 1, "2 Setup", "Setup text. " * 60),  # same paper+page, different section
+    ]
+    for strat in ("fixed", "semantic"):
+        ids = [c.chunk_id for c in chunk_blocks(blocks, strat)]
+        assert len(ids) == len(set(ids)), f"{strat} produced duplicate chunk_ids"
