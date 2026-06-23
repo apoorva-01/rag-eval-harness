@@ -1,3 +1,17 @@
+"""Synthetic gold-set generation and loading.
+
+KNOWN LIMITATION (named, not hidden): each gold item's question is generated FROM a
+single source chunk, and that same chunk is recorded as the only ground-truth. This is
+structurally circular for *retrieval* evaluation — the labeled-relevant chunk is the one
+the question was written from, so it tends to rank highly under every retriever, which
+COMPRESSES the separation between Dense / Hybrid / Hybrid+rerank rather than inflating any
+single number. Two further caveats: (1) single-positive ground truth means Recall@k is
+deflated whenever other chunks are also genuinely relevant; (2) the set is LLM-synthesized
+and not hand-verified. We de-lexicalize the questions below to reduce keyword leakage, but
+the structural circularity remains — read the retrieval table with that in mind, and treat
+the gold-INDEPENDENT citation metric (eval/citation_metric.py) as the headline signal.
+"""
+
 import json
 import random
 from dataclasses import dataclass, asdict
@@ -16,9 +30,15 @@ _SCHEMA = {
 }
 
 _SYS = (
-    "Given a passage from a research paper, write ONE specific question that is "
-    "fully answerable from this passage alone, and its concise reference answer. "
-    "Avoid questions needing outside context."
+    "Given a passage from a research paper, write ONE specific question that is fully "
+    "answerable from this passage alone, plus its concise reference answer. "
+    "Constraints to keep the question a fair retrieval test, not a keyword echo: "
+    "(1) do NOT copy distinctive phrases, numbers, or terminology verbatim from the "
+    "passage — paraphrase the concept instead; "
+    "(2) the question must require understanding the passage's meaning, not matching its "
+    "surface words; "
+    "(3) avoid questions that need outside context. "
+    "Write the question as a reader who has NOT seen this exact passage would phrase it."
 )
 
 

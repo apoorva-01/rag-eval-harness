@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Offline tests (no API key, no model downloads, no PDFs)
+        # The model-download tests (test_embed/store/retrieve), API tests
+        # (test_generate/metrics/pipeline + eval/test_rag), and ingest (needs PDFs)
+        # are intentionally excluded — they require secrets and ~GB of model weights.
+        run: >
+          pytest -q
+          tests/test_config.py
+          tests/test_chunk.py
+          tests/test_retrieval_metrics.py
+          tests/test_run_matrix.py
+          tests/test_citation_metric.py
