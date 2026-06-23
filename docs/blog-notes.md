@@ -12,7 +12,7 @@
 - **Fixed-size (512 tokens):** Consistent boundaries, reproducible splits, stable embeddings across runs
   - Observed impact on retrieval: _to be measured_
   - Observed impact on faithfulness: _to be measured_
-- **Semantic (LLM-driven):** Logical breakpoints, higher variance in chunk size, context-aware segmentation
+- **Semantic (sentence-greedy, no LLM):** Packs whole sentences up to a ~700-char cap, breaks on section boundaries; higher variance in chunk size than fixed-size
   - Observed impact on retrieval: _to be measured_
   - Observed impact on faithfulness: _to be measured_
 - Decision logic: When does semantic chunking improve recall? When does fixed-size win on speed/consistency?

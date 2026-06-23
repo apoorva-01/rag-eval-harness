@@ -17,5 +17,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
+[tool.setuptools]
+py-modules = ["config"]
+packages = ["rag", "eval"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "eval"]

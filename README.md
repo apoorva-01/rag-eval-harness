@@ -34,7 +34,7 @@ The codebase is organized into ingestion/chunking/embedding (`rag/`) and evaluat
 ```
 rag/
 ├── ingest.py           # Load PDFs from data/papers/
-├── chunk.py            # Fixed-size and semantic (LLM-driven) chunking
+├── chunk.py            # Fixed-size and semantic chunking (regex sentence-splitting, no LLM)
 ├── embed.py            # Sentence-Transformers embeddings (bge-small, e5-large)
 ├── store.py            # Chroma vector database write/read
 ├── retrieve.py         # Dense, BM25 hybrid, cross-encoder reranking
@@ -52,7 +52,7 @@ eval/
 
 ## Chunking × Embedding Comparison
 
-Fixed-size chunking enforces consistent boundaries (e.g., 512 tokens), yielding stable, reproducible splits. Semantic chunking uses an LLM to identify logical breakpoints, potentially capturing paragraph-level semantics at the cost of variable chunk sizes. The embedding model choice (bge-small: 384-dim, lightweight; e5-large: 1024-dim, higher capacity) affects both retrieval precision and generation context quality. The matrix evaluates all four combinations to identify the optimal tradeoff for your use case: smaller models train faster and consume less memory, while larger models often capture richer semantic relationships. Watch for the faithfulness × recall tension — more context improves answer relevance but can dilute critical facts, especially with verbose chunks.
+Fixed-size chunking enforces consistent boundaries (e.g., 512 tokens), yielding stable, reproducible splits. Semantic chunking packs whole sentences greedily up to a ~700-character cap and breaks on section boundaries (no LLM call) — versus fixed-size character windows. The embedding model choice (bge-small: 384-dim, lightweight; e5-large: 1024-dim, higher capacity) affects both retrieval precision and generation context quality. The matrix evaluates all four combinations to identify the optimal tradeoff for your use case: smaller models train faster and consume less memory, while larger models often capture richer semantic relationships. Watch for the faithfulness × recall tension — more context improves answer relevance but can dilute critical facts, especially with verbose chunks.
 
 ## What I Learned
 
@@ -79,6 +79,8 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```bash
 pip install -e ".[dev]"
 ```
+
+> Run all scripts from the repo root, after the editable install above (it puts `config`, `rag`, and `eval` on the path).
 
 ### 3. Prepare Data
 

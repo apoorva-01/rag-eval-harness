@@ -6,11 +6,14 @@ from deepeval.metrics import (
 
 from eval.claude_judge import ClaudeJudge
 
-_judge = ClaudeJudge()
+_judge = None
 
 
 def evaluate_case(question, generated_answer, reference_answer,
                   retrieved_chunks) -> dict:
+    global _judge
+    if _judge is None:
+        _judge = ClaudeJudge()
     context = [c.text for c in retrieved_chunks]
     case = LLMTestCase(
         input=question,
