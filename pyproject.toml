@@ -15,7 +15,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+# playwright is only for scripts/capture_screenshot.py — after install, run `playwright install chromium`
+dev = ["pytest>=8.0", "playwright>=1.40"]
 
 [tool.setuptools]
 py-modules = ["config"]
