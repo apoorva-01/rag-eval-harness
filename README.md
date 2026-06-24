@@ -8,8 +8,8 @@ citation-faithfulness metric** that measures the standout feature directly.
 
 ![Streamlit demo: a cited answer with an expanded page/section source panel](docs/screenshot.png)
 
-<!-- CI badge — set OWNER/REPO after pushing to GitHub:
-[![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/ci.yml) -->
+[![CI](https://github.com/apoorva-01/rag-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/apoorva-01/rag-eval-harness/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Results
 
