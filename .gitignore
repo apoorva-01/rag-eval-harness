@@ -6,3 +6,4 @@ chroma_db/
 *.egg-info/
 .pytest_cache/
 matrix_run.log
+.deepeval/
