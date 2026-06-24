@@ -51,8 +51,8 @@ def generation_table() -> list[dict]:
     # citation audit), so the expensive generation sweep is capped at MATRIX_GEN_SAMPLE
     # questions (default 20) for affordability; raise/unset it for the full set.
     gold = load(GOLD_PATH)
-    sample = os.environ.get("MATRIX_GEN_SAMPLE")
-    if sample:
+    sample = os.environ.get("MATRIX_GEN_SAMPLE", "20")  # default 20; set "0"/"" for all
+    if sample and int(sample) > 0:
         gold = gold[:int(sample)]
     rows = []
     for cfg in MATRIX:
