@@ -5,12 +5,19 @@ from deepeval.metrics import (
 )
 
 from eval.claude_judge import ClaudeJudge
+from eval.citation_metric import citation_scores
 
 _judge = None
 
 
 def evaluate_case(question, generated_answer, reference_answer,
                   retrieved_chunks) -> dict:
+    """Run the four DeepEval metrics plus the custom citation metric.
+
+    Returns the six metric keys. `citation_precision`/`citation_recall` may be None
+    when undefined (an answer with no cited factual claims, e.g. an honest refusal) —
+    callers aggregating into means must skip None.
+    """
     global _judge
     if _judge is None:
         _judge = ClaudeJudge()
@@ -31,4 +38,5 @@ def evaluate_case(question, generated_answer, reference_answer,
     for name, metric in metrics.items():
         metric.measure(case)
         scores[name] = metric.score
+    scores.update(citation_scores(question, generated_answer, retrieved_chunks))
     return scores
