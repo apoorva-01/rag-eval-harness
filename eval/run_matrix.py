@@ -1,4 +1,5 @@
 import csv
+import os
 import statistics
 from pathlib import Path
 
@@ -25,9 +26,11 @@ def _mean(xs):
 
 def retrieval_table() -> list[dict]:
     # Reuse the prebuilt collection via load() — do NOT re-embed per retriever mode.
+    # Full gold set: retrieval scoring is local + cheap (no LLM calls).
     gold = load(GOLD_PATH)
     rows = []
     for mode in RETRIEVER_LADDER:
+        print(f"[retrieval] {mode} over {len(gold)} questions ...", flush=True)
         pipe = RAGPipeline(ExperimentConfig("fixed", "bge_small", mode))
         pipe.load()
         nd, rc, rr = [], [], []
@@ -44,9 +47,17 @@ def retrieval_table() -> list[dict]:
 
 def generation_table() -> list[dict]:
     # Reuse the four prebuilt collections via load() — no re-embedding.
+    # Each (config, question) costs ~9 LLM calls (generation + 4 DeepEval metrics +
+    # citation audit), so the expensive generation sweep is capped at MATRIX_GEN_SAMPLE
+    # questions (default 20) for affordability; raise/unset it for the full set.
     gold = load(GOLD_PATH)
+    sample = os.environ.get("MATRIX_GEN_SAMPLE")
+    if sample:
+        gold = gold[:int(sample)]
     rows = []
     for cfg in MATRIX:
+        print(f"[generation] {cfg.collection_name} over {len(gold)} questions ...",
+              flush=True)
         pipe = RAGPipeline(cfg)
         pipe.load()
         agg = {k: [] for k in GEN_METRIC_KEYS}
